@@ -1,0 +1,32 @@
+name: Sample Service Contract
+version: "1.0.0"
+description: A sample open contract definition for demonstration purposes
+
+endpoints:
+  - path: /health
+    method: GET
+    description: Health check endpoint
+    responses:
+      - status: 200
+        description: Service is healthy
+
+  - path: /items
+    method: GET
+    description: List all items
+    responses:
+      - status: 200
+        description: A list of items
+
+  - path: /items/{id}
+    method: GET
+    description: Get a specific item by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+    responses:
+      - status: 200
+        description: The requested item
+      - status: 404
+        description: Item not found
