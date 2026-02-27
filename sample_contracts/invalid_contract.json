@@ -1,0 +1,14 @@
+{
+  "id": "release-2024-it-001",
+  "date": "not-a-date",
+  "tag": ["unknown-tag"],
+  "initiationType": "tender",
+  "parties": [],
+  "buyer": {},
+  "tender": {
+    "id": "tender-2024-it-001",
+    "title": "IT Services Procurement",
+    "status": "unknown-status",
+    "procurementMethod": "secret"
+  }
+}
