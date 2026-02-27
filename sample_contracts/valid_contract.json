@@ -1,0 +1,40 @@
+{
+  "ocid": "ocds-abc123-2024-roadworks",
+  "id": "release-2024-roadworks-001",
+  "date": "2024-01-15T00:00:00Z",
+  "tag": ["tender"],
+  "initiationType": "tender",
+  "parties": [
+    {
+      "id": "GB-GOR-dept-transport",
+      "name": "Department of Transport",
+      "roles": ["buyer"]
+    },
+    {
+      "id": "GB-COH-00001234",
+      "name": "Acme Construction Ltd",
+      "roles": ["tenderer"]
+    }
+  ],
+  "buyer": {
+    "id": "GB-GOR-dept-transport",
+    "name": "Department of Transport"
+  },
+  "tender": {
+    "id": "tender-2024-roadworks-001",
+    "title": "City Road Maintenance Contract 2024",
+    "description": "Annual road maintenance and repair services for the city centre district.",
+    "status": "active",
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Open competitive tendering",
+    "value": {
+      "amount": 750000,
+      "currency": "GBP"
+    },
+    "tenderPeriod": {
+      "startDate": "2024-01-15T09:00:00Z",
+      "endDate": "2024-03-15T17:00:00Z"
+    },
+    "numberOfTenderers": 1
+  }
+}
