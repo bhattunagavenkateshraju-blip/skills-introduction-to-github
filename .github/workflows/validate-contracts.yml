@@ -1,0 +1,33 @@
+name: Validate Contracts
+
+on:
+  push:
+    paths:
+      - "contracts/**"
+      - "contract-validator.py"
+  pull_request:
+    paths:
+      - "contracts/**"
+      - "contract-validator.py"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate contract files
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Run contract validator
+        run: python contract-validator.py
