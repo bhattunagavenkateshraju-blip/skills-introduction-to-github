@@ -16,9 +16,9 @@ A desktop Student Management System with Tkinter GUI and MySQL backend.
 - mysql-connector-python
 
 ## Project Files
-- `/home/runner/work/skills-introduction-to-github/skills-introduction-to-github/bhattunagavenkateshraju-blip/skills-introduction-to-github/student_management_system/app.py`
-- `/home/runner/work/skills-introduction-to-github/skills-introduction-to-github/bhattunagavenkateshraju-blip/skills-introduction-to-github/student_management_system/db_schema.sql`
-- `/home/runner/work/skills-introduction-to-github/skills-introduction-to-github/bhattunagavenkateshraju-blip/skills-introduction-to-github/student_management_system/requirements.txt`
+- `app.py`
+- `db_schema.sql`
+- `requirements.txt`
 
 ## Setup
 1. Install MySQL and create/update credentials.

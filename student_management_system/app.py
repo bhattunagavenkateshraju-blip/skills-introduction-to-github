@@ -66,10 +66,13 @@ class StudentManagementSystem:
             if fetch:
                 return cursor.fetchall()
             conn.commit()
-            return None
-        except Error as exc:
-            messagebox.showerror("Database Error", f"{exc}")
-            return [] if fetch else None
+            return True
+        except Error:
+            messagebox.showerror(
+                "Database Error",
+                "Database operation failed. Please verify credentials and database availability.",
+            )
+            return None if fetch else False
         finally:
             if cursor:
                 cursor.close()
@@ -208,7 +211,9 @@ class StudentManagementSystem:
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
         params = tuple(self.student_vars[key].get().strip() for key in self.student_vars)
-        self.execute_query(query, params)
+        success = self.execute_query(query, params)
+        if not success:
+            return
         self.load_students()
         self.clear_fields()
         messagebox.showinfo("Success", "Student added successfully.")
@@ -232,7 +237,9 @@ class StudentManagementSystem:
             self.student_vars["address"].get().strip(),
             self.student_vars["student_id"].get().strip(),
         )
-        self.execute_query(query, params)
+        success = self.execute_query(query, params)
+        if not success:
+            return
         self.load_students()
         messagebox.showinfo("Success", "Student updated successfully.")
 
@@ -246,7 +253,9 @@ class StudentManagementSystem:
         if not confirm:
             return
 
-        self.execute_query("DELETE FROM students WHERE student_id=%s", (student_id,))
+        success = self.execute_query("DELETE FROM students WHERE student_id=%s", (student_id,))
+        if not success:
+            return
         self.load_students()
         self.clear_fields()
         messagebox.showinfo("Success", "Student deleted successfully.")
@@ -256,6 +265,8 @@ class StudentManagementSystem:
             "SELECT student_id, name, age, gender, course, email, phone, address FROM students ORDER BY created_at DESC",
             fetch=True,
         )
+        if rows is None:
+            return
         self.student_table.delete(*self.student_table.get_children())
         for row in rows:
             self.student_table.insert("", "end", values=tuple(row[col] for col in row))
@@ -276,6 +287,8 @@ class StudentManagementSystem:
             (f"%{text}%", f"%{text}%"),
             fetch=True,
         )
+        if rows is None:
+            return
         self.student_table.delete(*self.student_table.get_children())
         for row in rows:
             self.student_table.insert("", "end", values=tuple(row[col] for col in row))
