@@ -1,9 +1,13 @@
 import os
 import tkinter as tk
+import logging
 from tkinter import messagebox, ttk
 
 import mysql.connector
 from mysql.connector import Error, IntegrityError, InterfaceError, OperationalError
+
+logging.basicConfig(level=logging.ERROR)
+LOGGER = logging.getLogger(__name__)
 
 
 class StudentManagementSystem:
@@ -83,10 +87,14 @@ class StudentManagementSystem:
                 "Unable to connect to the database server. Please verify credentials and server status.",
             )
             return None if fetch else False
-        except IntegrityError:
-            messagebox.showerror("Database Error", "Duplicate or invalid record data was provided.")
+        except IntegrityError as exc:
+            if "Duplicate entry" in str(exc):
+                messagebox.showerror("Database Error", "Student ID already exists.")
+            else:
+                messagebox.showerror("Database Error", "Duplicate or invalid record data was provided.")
             return None if fetch else False
-        except Error:
+        except Error as exc:
+            LOGGER.exception("Database operation failed: %s", exc)
             messagebox.showerror("Database Error", "Database operation failed. Please try again.")
             return None if fetch else False
         finally:
@@ -213,8 +221,13 @@ class StudentManagementSystem:
                 return False
 
         age_value = self.student_vars["age"].get().strip()
-        if not age_value.isdigit() or int(age_value) <= 0:
+        if not age_value.isdigit():
             messagebox.showwarning("Validation Error", "Age must be a positive number.")
+            return False
+
+        age_number = int(age_value)
+        if age_number <= 0 or age_number > 150:
+            messagebox.showwarning("Validation Error", "Age must be between 1 and 150.")
             return False
 
         return True
@@ -284,9 +297,7 @@ class StudentManagementSystem:
         )
         if rows is None:
             return
-        self.student_table.delete(*self.student_table.get_children())
-        for row in rows:
-            self.student_table.insert("", "end", values=tuple(row[col] for col in row))
+        self.populate_table(rows)
 
     def search_students(self):
         text = self.search_var.get().strip()
@@ -307,6 +318,9 @@ class StudentManagementSystem:
         )
         if rows is None:
             return
+        self.populate_table(rows)
+
+    def populate_table(self, rows):
         self.student_table.delete(*self.student_table.get_children())
         for row in rows:
             self.student_table.insert("", "end", values=tuple(row[col] for col in row))
