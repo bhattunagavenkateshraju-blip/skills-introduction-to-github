@@ -301,7 +301,8 @@ class StudentManagementSystem:
 
     def load_students(self):
         rows = self.execute_query(
-            f"SELECT student_id, name, age, gender, course, email, phone, address FROM students ORDER BY created_at DESC LIMIT {self.max_records}",
+            "SELECT student_id, name, age, gender, course, email, phone, address FROM students ORDER BY created_at DESC LIMIT %s",
+            (self.max_records,),
             fetch=True,
         )
         if rows is None:
@@ -320,9 +321,9 @@ class StudentManagementSystem:
             FROM students
             WHERE student_id LIKE %s OR name LIKE %s
             ORDER BY created_at DESC
-            LIMIT {self.max_records}
+            LIMIT %s
             """,
-            (f"%{text}%", f"%{text}%"),
+            (f"%{text}%", f"%{text}%", self.max_records),
             fetch=True,
         )
         if rows is None:
