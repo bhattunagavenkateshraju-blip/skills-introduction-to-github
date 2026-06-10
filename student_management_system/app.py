@@ -46,6 +46,7 @@ class StudentManagementSystem:
             "address",
         ]
         self.search_var = tk.StringVar()
+        self.max_records = 500
 
         self._build_ui()
         self.ensure_table_exists()
@@ -300,7 +301,7 @@ class StudentManagementSystem:
 
     def load_students(self):
         rows = self.execute_query(
-            "SELECT student_id, name, age, gender, course, email, phone, address FROM students ORDER BY created_at DESC LIMIT 500",
+            f"SELECT student_id, name, age, gender, course, email, phone, address FROM students ORDER BY created_at DESC LIMIT {self.max_records}",
             fetch=True,
         )
         if rows is None:
@@ -319,7 +320,7 @@ class StudentManagementSystem:
             FROM students
             WHERE student_id LIKE %s OR name LIKE %s
             ORDER BY created_at DESC
-            LIMIT 500
+            LIMIT {self.max_records}
             """,
             (f"%{text}%", f"%{text}%"),
             fetch=True,
