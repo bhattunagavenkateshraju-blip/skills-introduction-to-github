@@ -249,7 +249,8 @@ class StudentManagementSystem:
             INSERT INTO students (student_id, name, age, gender, course, email, phone, address)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
-        params = tuple(self.student_vars[key].get().strip() for key in self.field_order)
+        insert_fields = ("student_id", "name", "age", "gender", "course", "email", "phone", "address")
+        params = tuple(self.student_vars[key].get().strip() for key in insert_fields)
         success = self.execute_query(query, params)
         if not success:
             return
