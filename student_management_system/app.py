@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 
 import mysql.connector
-from mysql.connector import Error
+from mysql.connector import Error, IntegrityError, InterfaceError, OperationalError
 
 
 class StudentManagementSystem:
@@ -31,6 +31,16 @@ class StudentManagementSystem:
             "phone": tk.StringVar(),
             "address": tk.StringVar(),
         }
+        self.field_order = [
+            "student_id",
+            "name",
+            "age",
+            "gender",
+            "course",
+            "email",
+            "phone",
+            "address",
+        ]
         self.search_var = tk.StringVar()
 
         self._build_ui()
@@ -67,11 +77,17 @@ class StudentManagementSystem:
                 return cursor.fetchall()
             conn.commit()
             return True
-        except Error:
+        except (InterfaceError, OperationalError):
             messagebox.showerror(
                 "Database Error",
-                "Database operation failed. Please verify credentials and database availability.",
+                "Unable to connect to the database server. Please verify credentials and server status.",
             )
+            return None if fetch else False
+        except IntegrityError:
+            messagebox.showerror("Database Error", "Duplicate or invalid record data was provided.")
+            return None if fetch else False
+        except Error:
+            messagebox.showerror("Database Error", "Database operation failed. Please try again.")
             return None if fetch else False
         finally:
             if cursor:
@@ -196,7 +212,8 @@ class StudentManagementSystem:
                 messagebox.showwarning("Validation Error", f"{key.replace('_', ' ').title()} is required.")
                 return False
 
-        if not self.student_vars["age"].get().isdigit() or int(self.student_vars["age"].get()) <= 0:
+        age_value = self.student_vars["age"].get().strip()
+        if not age_value.isdigit() or int(age_value) <= 0:
             messagebox.showwarning("Validation Error", "Age must be a positive number.")
             return False
 
@@ -210,7 +227,7 @@ class StudentManagementSystem:
             INSERT INTO students (student_id, name, age, gender, course, email, phone, address)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
-        params = tuple(self.student_vars[key].get().strip() for key in self.student_vars)
+        params = tuple(self.student_vars[key].get().strip() for key in self.field_order)
         success = self.execute_query(query, params)
         if not success:
             return
@@ -262,7 +279,7 @@ class StudentManagementSystem:
 
     def load_students(self):
         rows = self.execute_query(
-            "SELECT student_id, name, age, gender, course, email, phone, address FROM students ORDER BY created_at DESC",
+            "SELECT student_id, name, age, gender, course, email, phone, address FROM students ORDER BY created_at DESC LIMIT 500",
             fetch=True,
         )
         if rows is None:
@@ -283,6 +300,7 @@ class StudentManagementSystem:
             FROM students
             WHERE student_id LIKE %s OR name LIKE %s
             ORDER BY created_at DESC
+            LIMIT 500
             """,
             (f"%{text}%", f"%{text}%"),
             fetch=True,
@@ -307,8 +325,7 @@ class StudentManagementSystem:
         if not values:
             return
 
-        keys = list(self.student_vars.keys())
-        for idx, key in enumerate(keys):
+        for idx, key in enumerate(self.field_order):
             self.student_vars[key].set(values[idx])
 
 
