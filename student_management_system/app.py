@@ -52,6 +52,7 @@ class StudentManagementSystem:
         self.load_students()
 
     def get_connection(self):
+        """Create and return a MySQL connection using configured credentials."""
         return mysql.connector.connect(**self.db_config)
 
     def ensure_table_exists(self):
@@ -71,6 +72,13 @@ class StudentManagementSystem:
         self.execute_query(query)
 
     def execute_query(self, query: str, params=None, fetch: bool = False):
+        """
+        Execute a SQL query safely.
+
+        Returns:
+        - fetch=True: list of rows on success, None on failure
+        - fetch=False: True on success, False on failure
+        """
         conn = None
         cursor = None
         try:
@@ -323,7 +331,7 @@ class StudentManagementSystem:
     def populate_table(self, rows):
         self.student_table.delete(*self.student_table.get_children())
         for row in rows:
-            self.student_table.insert("", "end", values=tuple(row[col] for col in row))
+            self.student_table.insert("", "end", values=tuple(row[col] for col in self.field_order))
 
     def clear_fields(self):
         for var in self.student_vars.values():
